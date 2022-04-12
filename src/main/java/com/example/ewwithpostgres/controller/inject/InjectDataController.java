@@ -21,10 +21,9 @@ public class InjectDataController {
 
     @PostConstruct
     public void init() {
-        User admin = new User();
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword(passwordEncoder.encode("admin"));
-        admin.setRole(Role.ADMIN);
+        User admin = new User("admin@gmail.com",
+                passwordEncoder.encode("admin"),
+                Role.ADMIN);
         userRepository.save(admin);
 
         List<Advertising> advertisingList = List.of(

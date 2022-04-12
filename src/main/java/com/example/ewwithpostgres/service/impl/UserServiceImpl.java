@@ -1,6 +1,5 @@
 package com.example.ewwithpostgres.service.impl;
 
-import com.example.ewwithpostgres.model.Role;
 import com.example.ewwithpostgres.model.User;
 import com.example.ewwithpostgres.repository.UserRepository;
 import com.example.ewwithpostgres.service.UserService;
@@ -17,7 +16,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.USER);
         return userRepository.save(user);
     }
 

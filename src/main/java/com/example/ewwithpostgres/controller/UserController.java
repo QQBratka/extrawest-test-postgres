@@ -3,6 +3,8 @@ package com.example.ewwithpostgres.controller;
 import com.example.ewwithpostgres.dto.request.UserRequestDto;
 import com.example.ewwithpostgres.dto.response.UserResponseDto;
 import com.example.ewwithpostgres.model.User;
+import com.example.ewwithpostgres.repository.UserRepository;
+import com.example.ewwithpostgres.service.AuthenticationService;
 import com.example.ewwithpostgres.service.UserService;
 import com.example.ewwithpostgres.service.mapper.UserMapper;
 import javax.validation.Valid;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserMapper userMapper;
     private final UserService userService;
+    private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('users:write')")
@@ -34,8 +38,13 @@ public class UserController {
     public UserResponseDto update(@PathVariable Long id,
                                   @RequestBody @Valid UserRequestDto requestDto) {
         User user = userMapper.toModel(requestDto);
-        user.setId(id);
-        return userMapper.toDto(userService.save(user));
+        if (userRepository.findById(id).isPresent()) {
+            user.setId(userRepository.findById(id).get().getId());
+            user.setRole(userRepository.findById(id).get().getRole());
+            return userMapper.toDto(userService.save(user));
+        }
+        return userMapper.toDto(authenticationService
+                .register(requestDto.getEmail(), requestDto.getPassword()));
     }
 
     @DeleteMapping("/{id}")
